@@ -1,5 +1,5 @@
 const express = require("express");
-
+const mongoose = require('mongoose');
 const  app = express();
 
 app.use(express.json());
@@ -10,10 +10,23 @@ app.use(express.urlencoded({
 
 const productData =[];
 
-app.listen(2000,()=>{
-    console.log("Connected to the server at 200000")
-})
+// mongodb+srv://chauhanvishal7398:<db_password>@cluster0.c9hym.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+//connect to mongoose
 
+async function connectDB() {
+    try {
+        await  mongoose.set('strictQuery',true);
+        await mongoose.connect("mongodb+srv://chauhanvishal7398:Vishal%40143@cluster0.c9hym.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
+            useUnifiedTopology: true,
+            useNewUrlParser: true
+        });
+        console.log("Connected to mongoose");
+    } catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+    }
+}
+
+connectDB();
 //post api
 app.post("/api/add_product",(req,res)=>{
 
@@ -54,7 +67,6 @@ app.get("/api/get_product", (req,res)=>{
 });
 
 //update api put
-
 app.put("/api/update/:id", (req,res)=>{
 
     let id = req.params.id*1;
@@ -71,7 +83,6 @@ app.put("/api/update/:id", (req,res)=>{
 });
 
 //delete api
-
 app.post("/api/delete/:id",(req,res)=>{
     let id =req.params.id*1;
     let productToUpdate= productData.find(p=>p.id === id);
@@ -83,4 +94,8 @@ app.post("/api/delete/:id",(req,res)=>{
         'status':'success',
         'message':'Product deleted'
     })
+});
+
+app.listen(2000,()=>{
+    console.log("Connected to the server at 200000")
 })
